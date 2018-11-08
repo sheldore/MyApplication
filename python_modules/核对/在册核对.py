@@ -7,6 +7,7 @@ from openpyxl import Workbook,load_workbook
 
 持证表sheetnamelist = 持证book.sheetnames
 持证表sheetnamelist.remove("单位目录")
+持证表sheetnamelist.remove("持证人数")
 持证表sheetnamelist.remove("矿办")
 
 持证表所有单位姓名list = [["".join(list(filter(lambda x:x.isalpha(),item))),
