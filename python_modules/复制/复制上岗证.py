@@ -5,7 +5,7 @@ from openpyxl.styles import numbers,Font,colors
 对内表单位目录sheet = 对内表book["单位目录"]
 上岗证sheet = load_workbook("合格证上岗证2018.xlsm").active
 上岗证办证时间 = 上岗证sheet.cell(2,6).value.replace("时间","").replace(" ","").replace(":","").replace("：","")
-单位转换dict = {"温州建设项目部":"温州建设","宏泰项目部":"宏泰三部","机电科":"机电部","财务科":"混编单位","宏远安装队":"宏远公司","地测科":"地质队"}
+单位转换dict = {"温州建设项目部":"温州建设","宏泰项目部":"宏泰三部","财务科":"混编单位","宏远安装队":"宏远公司","文化长廊组":"文化长廊"}
 success = 0
 fail = 0
 

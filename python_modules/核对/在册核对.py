@@ -1,4 +1,7 @@
+import datetime
 from openpyxl import Workbook,load_workbook
+
+starttime = datetime.datetime.now()
 
 井下单位book = load_workbook("井下单位Excel工作表赵芳.xlsm")
 持证book = load_workbook("燕子山矿井下从业人员培训持证上岗情况lixia.xlsm")
@@ -7,6 +10,7 @@ from openpyxl import Workbook,load_workbook
 
 持证表sheetnamelist = 持证book.sheetnames
 持证表sheetnamelist.remove("单位目录")
+持证表sheetnamelist.remove("持证人数")
 持证表sheetnamelist.remove("矿办")
 
 持证表所有单位姓名list = [["".join(list(filter(lambda x:x.isalpha(),item))),
@@ -20,7 +24,7 @@ from openpyxl import Workbook,load_workbook
 
 井下单位sheetnamelist = 井下单位book.sheetnames
 井下单位sheetnamelist.remove('单位目录')
-井下单位sheetnamelist.remove('模板')
+# 井下单位sheetnamelist.remove('模板')
 井下单位sheetnamelist.remove('Sheet1')
 井下所有单位姓名list = [[井下单位book[j].cell(i, 1).value,
                  井下单位book[j].cell(i, 2).value if 井下单位book[j].cell(i, 2).value is None else str(井下单位book[j].cell(i, 2).value).replace(" ", ""),
@@ -33,12 +37,17 @@ from openpyxl import Workbook,load_workbook
 def 核对某单位(单位名称):
     单位名称 = 单位名称
     井下某单位sheet = 井下单位book[单位名称]
-    在册人员名单某单位sheet = 在册人员名单book[单位名称]
+    try:
+        在册人员名单某单位sheet = 在册人员名单book[单位名称]
+    except:
+        print(单位名称 + " 不在在册名单中")
+        return
+
     在册核对结果某单位sheet = 在册核对结果book.create_sheet(title=单位名称)
 
     在册人员名单某单位姓名list = [["",#序号
                         在册人员名单某单位sheet.cell(i,4).value if 在册人员名单某单位sheet.cell(i,4).value is None else 在册人员名单某单位sheet.cell(i,4).value.replace(" ",""),#姓名
-                        在册人员名单某单位sheet.cell(i,7).value if 在册人员名单某单位sheet.cell(i,7).value is None else 在册人员名单某单位sheet.cell(i,7).value.replace(" ",""),#身份证
+                        在册人员名单某单位sheet.cell(i,7).value if 在册人员名单某单位sheet.cell(i,7).value is None else str(在册人员名单某单位sheet.cell(i,7).value).replace(" ",""),#身份证
                         在册人员名单某单位sheet.cell(i,8).value if 在册人员名单某单位sheet.cell(i,8).value is None else 在册人员名单某单位sheet.cell(i,8).value.replace(" ",""),]#职务工种
                        for i in range(4,在册人员名单某单位sheet.max_row+1)]
                         #[30, '王建伟', '140203198301044718', '综采维修电工']
@@ -58,7 +67,7 @@ def 核对某单位(单位名称):
                 elif 井下某单位姓名list[i][2][6:12] == 在册人员名单某单位姓名list[j][2][6:12]:#如果档案姓名不唯一且姓名与身份证都相同，则赋档案号
                     在册人员名单某单位姓名list[j][0] = 井下某单位姓名list[i][0]
             elif 井下某单位姓名list[i][2] is not None and 井下某单位姓名list[i][2] != "" \
-                    and 井下某单位姓名list[j][2] is not None and 井下某单位姓名list[j][2] != ""\
+                    and 井下某单位姓名list[i][2] is not None and 井下某单位姓名list[i][2] != ""\
                     and 井下某单位姓名list[i][2] == 在册人员名单某单位姓名list[j][2]:#如果姓名不同,且两身份证都不空,身份证相同，则直接赋档案号
                 在册人员名单某单位姓名list[j][0] = 井下某单位姓名list[i][0]
 
@@ -118,6 +127,11 @@ def 核对某单位(单位名称):
                     else:#如果核对表中上岗证不为空
                         在册核对结果某单位sheet.cell(在册核对结果某单位sheet.max_row,9).value += (item[0] + item[3]  + item[4] + " " + chr(10)) if item[3] !="" else ""#复制上岗证
 
-for 单位名称 in ["综采一队","机掘一队"]:
+
+
+for 单位名称 in 井下单位sheetnamelist: #["综采一队","综采二队","机掘一队"]:
     核对某单位(单位名称)
 在册核对结果book.save("临时核对结果.xlsx")
+
+endtime = datetime.datetime.now()
+print ("用时：" + str(endtime - starttime))
